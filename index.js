@@ -19,7 +19,7 @@ app.post('/shortByISGD', async (req, res) => {
   const makeShortLink = link => {
       return new Promise(resolve => {
           setTimeout(() => {
-              axios.get(`https://is.gd/create.php?format=simple&url=${link}`)
+              axios.get(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(link)}`)
                 .then(({ data: shortLink }) => {
                   console.log(`Get shortened link ${shortLink}`);
 
