@@ -41,7 +41,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Build the latest Docker image
-        docker build --cache-from devgivinschool/multilinks-api:latest --build-arg BUILDKIT_INLINE_CACHE=1 --tag devgivinschool/multilinks-api:latest .
+        run: docker build --cache-from devgivinschool/multilinks-api:latest --build-arg BUILDKIT_INLINE_CACHE=1 --tag devgivinschool/multilinks-api:latest .
       - name: Push the latest Docker image
         run: docker push devgivinschool/multilinks-api:latest
       - name: Configure SSH
