@@ -34,27 +34,14 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Check out the repo
-        uses: actions/checkout@v3
-        #with:
-          #ref: 'master'
-          # fetch-depth: 0 # fetch all history so multiple commits can be scanned
-      # - name: TEST keycloak.json
-        # run: |
-          # cat ./public/keycloak.json
+        uses: actions/checkout@v4
       - name: Log in to Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      # - name: Push to Docker Hub
-        # uses: docker/build-push-action@v2
-        # with:
-          # context: .
-          # push: true
-          # tags: devasteam/deva-crm:latest
-          # pull: true
       - name: Build the latest Docker image
-        run: docker build . --pull --file Dockerfile --tag devgivinschool/multilinks-api:latest
+        docker build --cache-from devgivinschool/multilinks-api:latest --build-arg BUILDKIT_INLINE_CACHE=1 --tag devgivinschool/multilinks-api:latest .
       - name: Push the latest Docker image
         run: docker push devgivinschool/multilinks-api:latest
       - name: Configure SSH
@@ -82,17 +69,8 @@ jobs:
 
       - name: Copy run sh
         run: scp /home/runner/work/multilinks-api/multilinks-api/multilinks_api_run.sh prod:/home/dr/multilinks_api_run.sh
-
-      # Всё сжимает в tar, передаёт и там распаковывает. В указанном примере я получил не файл portalgs_run2.sh, а папку. И файл лежал в /home/dr/portalgs_run2.sh/cmd/portalgs_run.sh
-      #- name: copy file via ssh key
-        #uses: appleboy/scp-action@master
-        #with:
-          #host: ${{ secrets.SSH_HOST }}
-          #username: ${{ secrets.SSH_USER }}
-          #port: ${{ secrets.SSH_PORT }}
-          #key: ${{ secrets.SSH_PRIVATE_KEY }}
-          #source: "cmd/portalgs_run.sh"
-          #target: "/home/dr/portalgs_run2.sh"
+      - name: Chmod run sh file
+        run: ssh prod 'chmod +x /home/dr/multilinks_api_run.sh'
 
       - name: Run sh
         run: ssh prod '/home/dr/multilinks_api_run.sh'
