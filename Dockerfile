@@ -1,4 +1,4 @@
-FROM node:14-alpine
+FROM node:14-buster as build
 
 ENV USER_ID=7006
 ENV USER_NAME=multilinks
